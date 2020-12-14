@@ -10,6 +10,9 @@ RUN apt-get update \
     curl \
     ca-certificates \
     apt-transport-https \
+    git \
+    default-jre \
+    maven \
     && rm -rf /var/lib/apt/lists/*
 
 # Install ms deb servers
@@ -23,3 +26,20 @@ RUN apt-get update \
     dotnet-sdk-3.1 \
     aspnetcore-runtime-3.1 \
     && rm -rf /var/lib/apt/lists/*
+
+RUN git clone --recursive https://github.com/p-org/p
+
+RUN cd p/Bld \
+    && ./build.sh
+
+# install via some wrapper scripts
+RUN echo "#!/bin/bash" > /usr/local/bin/pc \
+    && echo "dotnet /p/Bld/Drops/Release/Binaries/netcoreapp3.1/P.dll \"\$@\"" >> /usr/local/bin/pc \
+    && chmod +x /usr/local/bin/pc \
+    && echo "#!/bin/bash" > /usr/local/bin/pmc \
+    && echo "dotnet /p/packages/microsoft.coyote/1.0.5/lib/netcoreapp3.1/coyote.dll test \"\$@\"" >> /usr/local/bin/pmc \
+    && chmod +x /usr/local/bin/pmc
+
+# smoke test.
+RUN pc --help
+# no smoke test for pmc - it seems to exit 1 when you pass it --version or --?
