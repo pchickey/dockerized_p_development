@@ -5,41 +5,41 @@
 This machine creates the 2 participants, 1 coordinator, and 2 clients 
 */
 machine TestDriver0 {
-	start state Init {
-		entry {
-			var coord : machine;
-			var participants: seq[machine];
-			var i : int;
-			while (i < 2) {
-				participants += (i, new Participant());
-				i = i + 1;
-			}
-			coord = new Coordinator(participants);
-			new Client(coord);
-			new Client(coord);
-		}
-	}
+    start state Init {
+        entry {
+            var coord : machine;
+            var participants: seq[machine];
+            var i : int;
+            while (i < 2) {
+                participants += (i, new Participant());
+                i = i + 1;
+            }
+            coord = new Coordinator(participants);
+            new Client(coord);
+            new Client(coord);
+        }
+    }
 }
 
 /*
 This machine creates the 2 participants, 1 coordinator, 1 Failure injector, and 2 clients 
 */
 machine TestDriver1 {
-	start state Init {
-		entry {
-			var coord : machine;
-			var participants: seq[machine];
-			var i: int;
-			while (i < 2) {
-				participants += (i, new Participant());
-				i = i + 1;
-			}
-			coord = new Coordinator(participants);
-			new FailureInjector(participants);
-			new Client(coord);
-			new Client(coord);
-		}
-	}
+    start state Init {
+        entry {
+            var coord : machine;
+            var participants: seq[machine];
+            var i: int;
+            while (i < 2) {
+                participants += (i, new Participant());
+                i = i + 1;
+            }
+            coord = new Coordinator(participants);
+            new FailureInjector(participants);
+            new Client(coord);
+            new Client(coord);
+        }
+    }
 }
 
 /* 
@@ -49,18 +49,18 @@ This is one way of modeling node failures in P.
 Note that as the model-checker explores all possible interleavings. The failure injecture is exhaustive and can add a failure at all possible interleaving points.
 */
 machine FailureInjector {
-	start state Init {
-		entry (participants: seq[machine]){
-			var i : int;
-			i = 0;
-			while(i< sizeof(participants))
-			{
-				if($)
-				{
-					send participants[i], halt;
-				}
-				i = i + 1;
-			}		
-		}
-	}
+    start state Init {
+        entry (participants: seq[machine]){
+            var i : int;
+            i = 0;
+            while(i< sizeof(participants))
+            {
+                if($)
+                {
+                    send participants[i], halt;
+                }
+                i = i + 1;
+            }
+        }
+    }
 }
